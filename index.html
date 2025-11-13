@@ -1,138 +1,11 @@
-<!-- Código del juego ArtMatch estilo museo (versión inicial para editar) -->
-<!-- Voy a poner toda la estructura HTML aquí. Luego podemos editar CSS y JS dentro del mismo archivo o separarlo -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ArtMatch Museo</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Playfair Display', serif;
-            background: #f4efe6 url('https://i.imgur.com/mYbS2R3.jpeg'); /* textura museo suave */
-            background-size: cover;
-            background-attachment: fixed;
-            color: #3a2f1b;
-        }
-
-        .pantalla {
-            display: none;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .visible { display: block; }
-
-        #inicio h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            text-shadow: 0 3px 6px rgba(0,0,0,0.2);
-        }
-
-        #inicio .instrucciones {
-            max-width: 550px;
-            margin: auto;
-            font-size: 1.2rem;
-            line-height: 1.6;
-            background: rgba(255,255,255,0.8);
-            padding: 20px;
-            border-radius: 12px;
-            border: 2px solid #d4c5aa;
-        }
-
-        button {
-            margin-top: 25px;
-            font-size: 1.3rem;
-            padding: 12px 28px;
-            border-radius: 10px;
-            border: none;
-            background: #c7a671;
-            color: white;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button:hover { background: #b08a55; }
-
-        /* TABLERO */
-        #tablero {
-            display: grid;
-            grid-template-columns: repeat(4, 180px);
-            gap: 20px;
-            justify-content: center;
-            margin-top: 40px;
-        }
-
-        .carta {
-            width: 180px;
-            height: 180px;
-            background: #fff;
-            border-radius: 10px;
-            border: 6px solid #bfa87a; /* marco tipo cuadro */
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-            cursor: pointer;
-            overflow: hidden;
-            transition: transform .2s;
-        }
-
-        .carta:hover { transform: scale(1.05); }
-
-        .carta img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* GALERÍA FINAL */
-        #galeriaFinal {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 25px;
-            padding: 40px;
-        }
-
-        .obra {
-            background: #ffffffdd;
-            padding: 15px;
-            border-radius: 14px;
-            border: 4px solid #bfa87a;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .obra:hover { transform: scale(1.04); }
-
-        .obra img {
-            width: 100%;
-            border-radius: 8px;
-        }
-
-        /* MODAL GRANDE */
-        #modalFondo {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #modalObra {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 70%;
-        }
-
-        #modalObra img {
-            width: 100%;
-            border-radius: 8px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -140,8 +13,8 @@
     <section id="inicio" class="pantalla visible">
         <h1>🎨 ArtMatch: Museo Interactivo</h1>
         <p class="instrucciones">
-            Bienvenido al ArtMatch, un recorrido interactivo por un museo digital. <br><br>
-            Tu objetivo es encontrar las parejas de cuadros idénticos antes de que el tiempo se agote. Cada obra pertenece a un artista reconocido, y al completar el desafío, accederás a una galería exclusiva donde podrás verlas en grande y conocer más sobre ellas.
+            Bienvenido al ArtMatch, un recorrido interactivo por un museo digital.<br><br>
+            Tu objetivo es encontrar las parejas de cuadros antes de que el tiempo se agote. Al completar el desafío entrarás a una galería exclusiva donde podrás ver cada obra en grande, junto a su artista e historia.
         </p>
         <button onclick="iniciarJuego()">Comenzar</button>
     </section>
@@ -160,133 +33,11 @@
         <button onclick="reiniciar()">Jugar de nuevo</button>
     </section>
 
-    <!-- MODAL PREVIEW -->
+    <!-- MODAL DE OBRA EN GRANDE -->
     <div id="modalFondo" onclick="cerrarModal()">
         <div id="modalObra"></div>
     </div>
 
-<script>
-let obras = [
-    {nombre: "Mona Lisa", artista: "Leonardo da Vinci", desc: "Retrato icónico del Renacimiento.", img:"img/monalisa.jpg"},
-    {nombre: "Noche estrellada", artista: "Van Gogh", desc: "Cielo turbulento lleno de movimiento.", img:"img/noche.jpg"},
-    {nombre: "La joven de la perla", artista: "Vermeer", desc: "Retrato íntimo y misterioso.", img:"img/perla.jpg"},
-    {nombre: "El grito", artista: "Munch", desc: "Expresión del terror existencial.", img:"img/grito.jpg"}
-];
-
-let cartas = [];
-let seleccionadas = [];
-let tiempo = 60;
-let cuentaRegresiva;
-let encontradas = 0;
-
-function mostrarPantalla(id) {
-    document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('visible'));
-    document.getElementById(id).classList.add('visible');
-}
-
-function iniciarJuego() {
-    mostrarPantalla('juego');
-    cargarCartas();
-    iniciarTiempo();
-}
-
-function cargarCartas() {
-    cartas = [...obras, ...obras].sort(() => Math.random()-0.5);
-    let tablero = document.getElementById("tablero");
-    tablero.innerHTML = "";
-
-    cartas.forEach((obra,i)=>{
-        let c = document.createElement("div");
-        c.className = "carta";
-        c.dataset.indice = i;
-        c.onclick = () => voltear(c);
-        tablero.appendChild(c);
-    });
-}
-
-function voltear(carta) {
-    if (seleccionadas.length === 2) return;
-    let index = carta.dataset.indice;
-
-    carta.innerHTML = `<img src="${cartas[index].img}">`;
-    seleccionadas.push(carta);
-
-    if (seleccionadas.length === 2) {
-        setTimeout(()=>{
-            let [c1,c2] = seleccionadas;
-            let i1 = c1.dataset.indice;
-            let i2 = c2.dataset.indice;
-
-            if (cartas[i1].img === cartas[i2].img) {
-                encontradas++;
-                c1.style.pointerEvents = 'none';
-                c2.style.pointerEvents = 'none';
-
-                if (encontradas === obras.length) finJuego(true);
-            } else {
-                c1.innerHTML = "";
-                c2.innerHTML = "";
-            }
-            seleccionadas = [];
-        }, 800);
-    }
-}
-
-function iniciarTiempo() {
-    tiempo = 60;
-    document.getElementById('tiempo').textContent = tiempo;
-
-    cuentaRegresiva = setInterval(()=>{
-        tiempo--;
-        document.getElementById('tiempo').textContent = tiempo;
-        if (tiempo === 0) finJuego(false);
-    },1000);
-}
-
-function finJuego(ganaste) {
-    clearInterval(cuentaRegresiva);
-    mostrarPantalla('final');
-
-    document.getElementById('mensajeFinal').textContent = ganaste 
-        ? "¡Felicitaciones! Completaste el recorrido del museo."
-        : "Tiempo agotado… Volvé a intentarlo y completá la colección.";
-
-    cargarGaleria();
-}
-
-function cargarGaleria() {
-    let cont = document.getElementById('galeriaFinal');
-    cont.innerHTML = "";
-
-    obras.forEach(o =>{
-        let div = document.createElement("div");
-        div.className = "obra";
-        div.innerHTML = `<img src="${o.img}"><h3>${o.nombre}</h3><p>${o.artista}</p>`;
-        div.onclick = ()=> abrirModal(o);
-        cont.appendChild(div);
-    });
-}
-
-function abrirModal(obra) {
-    document.getElementById('modalFondo').style.display = 'flex';
-    document.getElementById('modalObra').innerHTML = `
-        <img src="${obra.img}">
-        <h2>${obra.nombre}</h2>
-        <h4>${obra.artista}</h4>
-        <p>${obra.desc}</p>
-    `;
-}
-
-function cerrarModal() {
-    document.getElementById('modalFondo').style.display = 'none';
-}
-
-function reiniciar() {
-    encontradas = 0;
-    seleccionadas = [];
-    iniciarJuego();
-}
-</script>
-
+    <script src="script.js"></script>
 </body>
 </html>
