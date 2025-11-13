@@ -1,48 +1,50 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Museo Memotest</title>
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArtMatch - Memotest de Arte</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="inicio" class="pantalla">
+    <h1>🎨 ArtMatch</h1>
+    <p class="instrucciones">
+      Bienvenido/a a <strong>ArtMatch</strong> — un juego donde el arte y la memoria se encuentran.<br><br>
+      <b>Instrucciones:</b><br>
+      Observá los cuadros y encontrá las <em>obras idénticas</em>.<br>
+      Tenés un tiempo limitado, así que ¡pensá rápido!<br>
+      Al final, podrás visitar la galería y descubrir más sobre cada pintura.
+    </p>
+    <button id="btnComenzar">Comenzar</button>
+  </div>
 
-<!-- Bienvenida -->
-<section id="welcome">
-    <div class="welcome-box">
-        <h1>🖼️ Museo Memotest</h1>
-        <p>
-            Encontrá los pares de obras del mismo artista para completar el recorrido.  
-            Al final podrás acceder a la Galería del Museo con información de cada obra.  
-            <br><br>
-            Tenés <strong>60 segundos</strong> para completar el desafío.
-        </p>
-        <button id="start-btn">Comenzar</button>
+  <div id="juego" class="pantalla oculto">
+    <div class="info-bar">
+      <span id="tiempo">Tiempo: 60s</span>
+      <span id="mensaje"></span>
     </div>
-</section>
+    <div id="tablero"></div>
+  </div>
 
-<!-- Juego -->
-<section id="game" class="hidden">
-    <div id="timer">Tiempo: 60s</div>
-    <div id="board"></div>
-</section>
+  <div id="galeria" class="pantalla oculto">
+    <h2>🖼️ Galería de Arte</h2>
+    <p>Seleccioná una obra para verla en detalle</p>
+    <div id="contenedorGaleria"></div>
+    <button id="reiniciar">Volver a jugar</button>
+  </div>
 
-<!-- Fin -->
-<section id="end" class="hidden">
-    <h2 id="end-title"></h2>
-    <div id="gallery"></div>
-    <button onclick="location.reload()">Reiniciar</button>
-</section>
-
-<!-- Modal -->
-<div id="modal" class="hidden">
-    <div class="modal-box">
-        <span id="close-modal">✖</span>
-        <img id="modal-img" src="">
-        <p id="modal-desc"></p>
+  <!-- Vista previa -->
+  <div id="vistaPrevia" class="oculto">
+    <div class="overlay"></div>
+    <div class="contenido">
+      <img id="vistaImg" src="" alt="">
+      <h3 id="vistaTitulo"></h3>
+      <p id="vistaDescripcion"></p>
+      <button id="cerrarVista">Cerrar</button>
     </div>
-</div>
+  </div>
 
-<script src="js/script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
