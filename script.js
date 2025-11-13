@@ -1,116 +1,123 @@
 const obras = [
-    { nombre: "La noche estrellada", imagen: "img/lanocheestrellada.jpg", descripcion: "Vincent van Gogh, 1889." },
-    { nombre: "La Gioconda", imagen: "img/monalisa.jpg", descripcion: "Leonardo da Vinci, 1503." },
-    { nombre: "El grito", imagen: "img/scream.jpg", descripcion: "Edvard Munch, 1893." },
-    { nombre: "La joven de la perla", imagen: "img/laperla.jpg", descripcion: "Johannes Vermeer, 1665." },
-    { nombre: "La persistencia de la memoria", imagen: "img/cuadro1.jpg", descripcion: "Salvador Dalí, 1931." },
-    { nombre: "El nacimiento de Venus", imagen: "img/cuadro2.jpg", descripcion: "Sandro Botticelli, 1486." }
+    {
+      nombre: "La Gioconda",
+      artista: "Leonardo da Vinci",
+      descripcion: "Retrato icónico del Renacimiento que simboliza la perfección del equilibrio y la armonía.",
+      imagen: "img/monalisa.jpg"
+    },
+    {
+      nombre: "La noche estrellada",
+      artista: "Vincent van Gogh",
+      descripcion: "Una visión expresiva y turbulenta del cielo nocturno sobre Saint-Rémy.",
+      imagen: "img/lanocheestrellada.jpg"
+    },
+    {
+      nombre: "El grito",
+      artista: "Edvard Munch",
+      descripcion: "Expresión del miedo existencial y la angustia humana, una de las obras más reconocibles del arte moderno.",
+      imagen: "img/scream.jpg"
+    },
+    {
+      nombre: "La joven de la perla",
+      artista: "Johannes Vermeer",
+      descripcion: "Retrato delicado que capta la luz y el misterio con una composición simple y equilibrada.",
+      imagen: "img/laperla.jpg"
+    },
+    {
+      nombre: "La persistencia de la memoria",
+      artista: "Salvador Dalí",
+      descripcion: "Obra surrealista que representa el paso del tiempo con relojes derretidos.",
+      imagen: "img/cuadro1.jpg"
+    },
+    {
+      nombre: "Los girasoles",
+      artista: "Vincent van Gogh",
+      descripcion: "Serie de naturalezas muertas vibrantes que simbolizan la amistad y la gratitud.",
+      imagen: "img/cuadro2.jpg"
+    }
   ];
   
-  let cartas = [...obras, ...obras];
-  let seleccionadas = [];
-  let paresEncontrados = 0;
-  let tiempoRestante = 60;
-  let timer;
+  let cards = [];
+  let flipped = [];
+  let matched = 0;
   
-  const inicio = document.getElementById("inicio");
-  const juego = document.getElementById("juego");
-  const galeria = document.getElementById("galeria");
-  const tablero = document.getElementById("tablero");
-  const tiempo = document.getElementById("tiempo");
-  const mensaje = document.getElementById("mensaje");
-  const contenedorGaleria = document.getElementById("contenedorGaleria");
+  const startBtn = document.getElementById("start-btn");
+  const restartBtn = document.getElementById("restart-btn");
+  const startScreen = document.getElementById("start-screen");
+  const gameScreen = document.getElementById("game-screen");
+  const galleryScreen = document.getElementById("gallery-screen");
+  const gameBoard = document.getElementById("game-board");
+  const gallery = document.getElementById("gallery");
   
-  document.getElementById("btnComenzar").onclick = iniciarJuego;
-  document.getElementById("reiniciar").onclick = () => location.reload();
+  startBtn.addEventListener("click", startGame);
+  restartBtn.addEventListener("click", () => location.reload());
   
-  function iniciarJuego() {
-    inicio.classList.add("oculto");
-    juego.classList.remove("oculto");
-    iniciarTiempo();
-    generarTablero();
+  function startGame() {
+    startScreen.classList.add("hidden");
+    gameScreen.classList.remove("hidden");
+    createBoard();
   }
   
-  function generarTablero() {
-    cartas.sort(() => Math.random() - 0.5);
-    tablero.innerHTML = "";
-    cartas.forEach((obra, i) => {
-      const carta = document.createElement("div");
-      carta.classList.add("carta");
-      carta.dataset.nombre = obra.nombre;
-      carta.innerHTML = `<img src="${obra.imagen}" alt="${obra.nombre}">`;
-      carta.onclick = () => voltearCarta(carta, obra);
-      tablero.appendChild(carta);
+  function createBoard() {
+    cards = [...obras, ...obras].sort(() => Math.random() - 0.5);
+    gameBoard.innerHTML = "";
+    cards.forEach((obra, index) => {
+      const card = document.createElement("div");
+      card.classList.add("card");
+      card.dataset.index = index;
+  
+      const img = document.createElement("img");
+      img.src = obra.imagen;
+      card.appendChild(img);
+  
+      card.addEventListener("click", () => flipCard(card));
+      gameBoard.appendChild(card);
     });
   }
   
-  function voltearCarta(carta, obra) {
-    if (carta.classList.contains("revelada") || seleccionadas.length === 2) return;
+  function flipCard(card) {
+    if (flipped.length === 2 || card.classList.contains("flipped")) return;
+    card.classList.add("flipped");
+    flipped.push(card);
   
-    carta.classList.add("revelada");
-    seleccionadas.push({ carta, obra });
-  
-    if (seleccionadas.length === 2) {
-      const [a, b] = seleccionadas;
-      if (a.obra.nombre === b.obra.nombre) {
-        paresEncontrados++;
-        seleccionadas = [];
-        if (paresEncontrados === obras.length) {
-          ganar();
-        }
-      } else {
-        setTimeout(() => {
-          a.carta.classList.remove("revelada");
-          b.carta.classList.remove("revelada");
-          seleccionadas = [];
-        }, 800);
-      }
+    if (flipped.length === 2) {
+      setTimeout(checkMatch, 600);
     }
   }
   
-  function iniciarTiempo() {
-    timer = setInterval(() => {
-      tiempoRestante--;
-      tiempo.textContent = `Tiempo: ${tiempoRestante}s`;
-      if (tiempoRestante <= 0) perder();
-    }, 1000);
+  function checkMatch() {
+    const [card1, card2] = flipped;
+    const obra1 = cards[card1.dataset.index];
+    const obra2 = cards[card2.dataset.index];
+  
+    if (obra1.nombre === obra2.nombre) {
+      matched += 2;
+      flipped = [];
+      if (matched === cards.length) {
+        setTimeout(showGallery, 1000);
+      }
+    } else {
+      flipped.forEach(c => c.classList.remove("flipped"));
+      flipped = [];
+    }
   }
   
-  function ganar() {
-    clearInterval(timer);
-    mensaje.textContent = "¡Excelente! Descubriste todas las obras 🏆";
-    setTimeout(mostrarGaleria, 2000);
-  }
+  function showGallery() {
+    gameScreen.classList.add("hidden");
+    galleryScreen.classList.remove("hidden");
+    gallery.innerHTML = "";
   
-  function perder() {
-    clearInterval(timer);
-    mensaje.textContent = "⏰ Se acabó el tiempo. Intentalo nuevamente.";
-    setTimeout(() => location.reload(), 2500);
-  }
+    obras.forEach(obra => {
+      const item = document.createElement("div");
+      item.classList.add("gallery-item");
   
-  function mostrarGaleria() {
-    juego.classList.add("oculto");
-    galeria.classList.remove("oculto");
-    contenedorGaleria.innerHTML = "";
-    obras.forEach(o => {
-      const img = document.createElement("img");
-      img.src = o.imagen;
-      img.alt = o.nombre;
-      img.onclick = () => mostrarVistaPrevia(o);
-      contenedorGaleria.appendChild(img);
+      item.innerHTML = `
+        <img src="${obra.imagen}" alt="${obra.nombre}">
+        <h3>${obra.nombre}</h3>
+        <p><strong>${obra.artista}</strong></p>
+        <p>${obra.descripcion}</p>
+      `;
+      gallery.appendChild(item);
     });
-  }
-  
-  const vistaPrevia = document.getElementById("vistaPrevia");
-  const vistaImg = document.getElementById("vistaImg");
-  const vistaTitulo = document.getElementById("vistaTitulo");
-  const vistaDescripcion = document.getElementById("vistaDescripcion");
-  document.getElementById("cerrarVista").onclick = () => vistaPrevia.classList.add("oculto");
-  
-  function mostrarVistaPrevia(obra) {
-    vistaImg.src = obra.imagen;
-    vistaTitulo.textContent = obra.nombre;
-    vistaDescripcion.textContent = obra.descripcion;
-    vistaPrevia.classList.remove("oculto");
   }
   
