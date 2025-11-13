@@ -1,125 +1,177 @@
-let obras = [
-    {nombre: "Mona Lisa", artista: "Leonardo da Vinci", desc: "Retrato icónico del Renacimiento.", img:"img/monalisa.jpg"},
-    {nombre: "Noche estrellada", artista: "Van Gogh", desc: "Cielo turbulento lleno de movimiento.", img:"img/lanocheestrellada.jpg"},
-    {nombre: "La joven de la perla", artista: "Vermeer", desc: "Retrato íntimo y misterioso.", img:"img/laperla.jpg"},
-    {nombre: "El grito", artista: "Munch", desc: "Expresión del terror existencial.", img:"img/scream.jpg"}
+// Lista de obras con imagen + artista + descripción
+const artworks = [
+    {
+        artist: "Claude Monet",
+        img: "mlaperla,jpg",
+        desc: "Impresionismo puro, lleno de luz y pinceladas sueltas."
+    },
+    {
+        artist: "Claude Monet",
+        img: "scream.jpg",
+        desc: "Una de las obras más representativas de la serie de estanques."
+    },
+    {
+        artist: "Van Gogh",
+        img: "lanochestrellada.jpg",
+        desc: "Colores vibrantes y movimiento intenso característicos del artista."
+    },
+    {
+        artist: "Van Gogh",
+        img: "monalisa.jpg",
+        desc: "Una obra que refleja el estilo postimpresionista y la emoción del autor."
+    }
 ];
 
-let cartas = [];
-let seleccionadas = [];
-let tiempo = 60;
-let cuentaRegresiva;
-let encontradas = 0;
+let timer = 60;
+let countdown;
+let firstCard = null;
+let lockBoard = false;
+let matched = 0;
 
-function mostrarPantalla(id) {
-    document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('visible'));
-    document.getElementById(id).classList.add('visible');
-}
+// DOM
+const board = document.getElementById("board");
+const startBtn = document.getElementById("start-btn");
+const timerBox = document.getElementById("timer");
+const welcomeScreen = document.getElementById("welcome-screen");
+const gameScreen = document.getElementById("game-screen");
+const endScreen = document.getElementById("end-screen");
+const gallery = document.getElementById("gallery");
+const endMessage = document.getElementById("end-message");
 
-function iniciarJuego() {
-    mostrarPantalla('juego');
-    cargarCartas();
-    iniciarTiempo();
-}
+const previewModal = document.getElementById("preview-modal");
+const previewImg = document.getElementById("preview-img");
+const previewDesc = document.getElementById("preview-desc");
+const closePreview = document.getElementById("close-preview");
 
-function cargarCartas() {
-    cartas = [...obras, ...obras].sort(() => Math.random() - 0.5);
-    let tablero = document.getElementById("tablero");
-    tablero.innerHTML = "";
+// --- INICIO DEL JUEGO ---
+startBtn.onclick = () => {
+    welcomeScreen.classList.add("hidden");
+    gameScreen.classList.remove("hidden");
 
-    cartas.forEach((obra, i) => {
-        let c = document.createElement("div");
-        c.className = "carta";
-        c.dataset.indice = i;
-        c.onclick = () => voltear(c);
-        tablero.appendChild(c);
-    });
-}
+    startTimer();
+    loadBoard();
+};
 
-function voltear(carta) {
-    if (seleccionadas.length === 2) return;
+function startTimer() {
+    countdown = setInterval(() => {
+        timer--;
+        timerBox.textContent = `Tiempo: ${timer}s`;
 
-    let index = carta.dataset.indice;
-    carta.innerHTML = `<img src="${cartas[index].img}">`;
-    seleccionadas.push(carta);
-
-    if (seleccionadas.length === 2) {
-        setTimeout(() => {
-            let [c1, c2] = seleccionadas;
-            let i1 = c1.dataset.indice;
-            let i2 = c2.dataset.indice;
-
-            if (cartas[i1].img === cartas[i2].img) {
-                encontradas++;
-                c1.style.pointerEvents = "none";
-                c2.style.pointerEvents = "none";
-
-                if (encontradas === obras.length) finJuego(true);
-            } else {
-                c1.innerHTML = "";
-                c2.innerHTML = "";
-            }
-            seleccionadas = [];
-        }, 800);
-    }
-}
-
-function iniciarTiempo() {
-    tiempo = 60;
-    document.getElementById("tiempo").textContent = tiempo;
-
-    cuentaRegresiva = setInterval(() => {
-        tiempo--;
-        document.getElementById("tiempo").textContent = tiempo;
-        if (tiempo === 0) finJuego(false);
+        if (timer <= 0) {
+            clearInterval(countdown);
+            loseGame();
+        }
     }, 1000);
 }
 
-function finJuego(ganaste) {
-    clearInterval(cuentaRegresiva);
-    mostrarPantalla("final");
+// --- CARGA DE MEMOTEST ---
+function loadBoard() {
+    let cards = [...artworks, ...artworks]; // duplicar
+    cards = shuffle(cards);
 
-    document.getElementById("mensajeFinal").textContent =
-        ganaste
-            ? "¡Felicitaciones! Completaste el recorrido del museo."
-            : "Se acabó el tiempo… Volvé a intentarlo.";
+    cards.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.classList.add("card");
+        div.dataset.artist = item.artist;
 
-    cargarGaleria();
-}
+        const img = document.createElement("img");
+        img.src = item.img;
 
-function cargarGaleria() {
-    let cont = document.getElementById("galeriaFinal");
-    cont.innerHTML = "";
-
-    obras.forEach(o => {
-        let div = document.createElement("div");
-        div.className = "obra";
-        div.innerHTML = `
-            <img src="${o.img}">
-            <h3>${o.nombre}</h3>
-            <p>${o.artista}</p>
-        `;
-        div.onclick = () => abrirModal(o);
-        cont.appendChild(div);
+        div.appendChild(img);
+        div.onclick = () => flipCard(div);
+        board.appendChild(div);
     });
 }
 
-function abrirModal(obra) {
-    document.getElementById("modalFondo").style.display = "flex";
-    document.getElementById("modalObra").innerHTML = `
-        <img src="${obra.img}">
-        <h2>${obra.nombre}</h2>
-        <h4>${obra.artista}</h4>
-        <p>${obra.desc}</p>
-    `;
+// Mezclar cartas
+function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
 }
 
-function cerrarModal() {
-    document.getElementById("modalFondo").style.display = "none";
+// Voltear carta
+function flipCard(card) {
+    if (lockBoard || card.classList.contains("matched")) return;
+
+    card.querySelector("img").style.display = "block";
+
+    if (!firstCard) {
+        firstCard = card;
+    } else {
+        checkMatch(card);
+    }
 }
 
-function reiniciar() {
-    encontradas = 0;
-    seleccionadas = [];
-    iniciarJuego();
+// Verificar match
+function checkMatch(card) {
+    lockBoard = true;
+
+    if (card.dataset.artist === firstCard.dataset.artist) {
+        card.classList.add("matched");
+        firstCard.classList.add("matched");
+        matched++;
+
+        if (matched === artworks.length) {
+            winGame();
+        }
+
+        reset();
+    } else {
+        setTimeout(() => {
+            card.querySelector("img").style.display = "none";
+            firstCard.querySelector("img").style.display = "none";
+            reset();
+        }, 900);
+    }
 }
+
+function reset() {
+    firstCard = null;
+    lockBoard = false;
+}
+
+// --- FIN DEL JUEGO ---
+function winGame() {
+    clearInterval(countdown);
+    gameScreen.classList.add("hidden");
+    endScreen.classList.remove("hidden");
+
+    endMessage.textContent = "🎉 ¡Completaste el recorrido del museo!";
+
+    loadGallery();
+}
+
+function loseGame() {
+    gameScreen.classList.add("hidden");
+    endScreen.classList.remove("hidden");
+
+    endMessage.textContent = "⏳ Se acabó el tiempo. ¡Intentalo de nuevo!";
+    loadGallery();
+}
+
+// --- GALERÍA FINAL ---
+function loadGallery() {
+    artworks.forEach((a) => {
+        const item = document.createElement("div");
+        item.classList.add("gallery-item");
+
+        const img = document.createElement("img");
+        img.src = a.img;
+
+        item.appendChild(img);
+
+        item.onclick = () => openPreview(a);
+
+        gallery.appendChild(item);
+    });
+}
+
+// --- MODAL ---
+function openPreview(a) {
+    previewImg.src = a.img;
+    previewDesc.textContent = a.desc;
+    previewModal.classList.remove("hidden");
+}
+
+closePreview.onclick = () => {
+    previewModal.classList.add("hidden");
+};

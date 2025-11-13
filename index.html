@@ -2,42 +2,43 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ArtMatch Museo</title>
+    <title>Memotest Museo</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- PANTALLA DE INICIO -->
-    <section id="inicio" class="pantalla visible">
-        <h1>🎨 ArtMatch: Museo Interactivo</h1>
-        <p class="instrucciones">
-            Bienvenido al ArtMatch, un recorrido interactivo por un museo digital.<br><br>
-            Tu objetivo es encontrar las parejas de cuadros antes de que el tiempo se agote. Al completar el desafío entrarás a una galería exclusiva donde podrás ver cada obra en grande, junto a su artista e historia.
-        </p>
-        <button onclick="iniciarJuego()">Comenzar</button>
-    </section>
+<div id="welcome-screen">
+    <h1>🖼️ Museo Memotest</h1>
+    <p>
+        Bienvenido/a al Museo Interactivo.  
+        Encontrarás pares de obras del mismo artista.  
+        Cuando encuentres todos los pares, ingresarás a la Galería Final, donde podrás ver cada obra en detalle.  
+        <br><br>
+        Tenés <strong>60 segundos</strong> para completar el recorrido.
+    </p>
+    <button id="start-btn">Comenzar</button>
+</div>
 
-    <!-- PANTALLA DE JUEGO -->
-    <section id="juego" class="pantalla">
-        <h2>Buscá las obras • Tiempo: <span id="tiempo">60</span>s</h2>
-        <div id="tablero"></div>
-    </section>
+<div id="game-screen" class="hidden">
+    <div id="timer">Tiempo: 60s</div>
+    <div id="board"></div>
+</div>
 
-    <!-- PANTALLA FINAL -->
-    <section id="final" class="pantalla">
-        <h2>🖼️ Galería de Arte</h2>
-        <p id="mensajeFinal"></p>
-        <div id="galeriaFinal"></div>
-        <button onclick="reiniciar()">Jugar de nuevo</button>
-    </section>
+<div id="end-screen" class="hidden">
+    <h2 id="end-message"></h2>
+    <div id="gallery"></div>
+    <button onclick="location.reload()">Volver a comenzar</button>
+</div>
 
-    <!-- MODAL DE OBRA EN GRANDE -->
-    <div id="modalFondo" onclick="cerrarModal()">
-        <div id="modalObra"></div>
+<!-- Modal para vista previa -->
+<div id="preview-modal" class="hidden">
+    <div class="modal-content">
+        <span id="close-preview">✖</span>
+        <img id="preview-img" src="" alt="">
+        <p id="preview-desc"></p>
     </div>
+</div>
 
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
