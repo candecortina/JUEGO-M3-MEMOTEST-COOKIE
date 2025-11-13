@@ -1,40 +1,59 @@
-body {
+/* Reset básico */
+* {
     margin: 0;
-    font-family: "Georgia", serif;
-    background: url("fondomuseo.jpg") center/cover no-repeat fixed;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* Pantalla de bienvenida */
-#welcome-screen {
-    text-align: center;
-    margin-top: 80px;
-    background: rgba(255, 255, 255, 0.8);
+body {
+    font-family: Georgia, serif;
+    background: url("../images/fondomuseo.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: #2b2b2b;
+}
+
+/* Centrados generales */
+section {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Bienvenida */
+.welcome-box {
+    width: 55%;
+    background: rgba(255, 255, 255, 0.85);
     padding: 40px;
-    width: 50%;
-    margin-left: auto;
-    margin-right: auto;
     border-radius: 15px;
+    text-align: center;
+    border: 3px solid #6a563a;
 }
 
-#start-btn {
-    padding: 12px 25px;
-    font-size: 18px;
-    border: none;
+button {
     background: #8b6f47;
     color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 18px;
     cursor: pointer;
     border-radius: 8px;
 }
 
-/* Tablero */
-#game-screen {
-    text-align: center;
-    padding-top: 30px;
+button:hover {
+    opacity: .85;
+}
+
+/* Juego */
+#timer {
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-weight: bold;
 }
 
 #board {
-    width: 850px;
-    margin: 0 auto;
+    width: 900px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 18px;
@@ -45,42 +64,36 @@ body {
 }
 
 .card {
-    width: 180px;
-    height: 180px;
-    background: white;
-    border: 5px solid #8b6f47;
+    width: 190px;
+    height: 190px;
+    border: 4px solid #8b6f47;
     border-radius: 12px;
-    cursor: pointer;
     overflow: hidden;
+    cursor: pointer;
+    background: #f9f9f9;
 }
 
 .card img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    display: none; /* Oculta imágenes al inicio */
+    display: none;
 }
 
-/* Fin del juego */
-#end-screen {
-    padding: 30px;
-    text-align: center;
-}
-
+/* Galería final */
 #gallery {
+    width: 75%;
+    margin: 20px auto;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 18px;
-    width: 70%;
-    margin: 30px auto;
 }
 
 .gallery-item {
-    background: white;
     border: 4px solid #6a563a;
     border-radius: 10px;
-    overflow: hidden;
+    background: white;
     cursor: pointer;
+    overflow: hidden;
 }
 
 .gallery-item img {
@@ -89,41 +102,43 @@ body {
     object-fit: cover;
 }
 
-/* Modal vista previa */
-#preview-modal {
+/* Modal */
+#modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.65);
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.modal-content {
-    width: 450px;
+.modal-box {
     background: white;
     padding: 25px;
-    border-radius: 10px;
+    width: 430px;
+    border-radius: 12px;
     text-align: center;
+    position: relative;
 }
 
-#preview-img {
+#modal-img {
     width: 100%;
-    max-height: 350px;
+    max-height: 330px;
     object-fit: contain;
 }
 
-#close-preview {
+#close-modal {
     position: absolute;
-    top: 20px;
-    right: 35px;
-    font-size: 28px;
+    top: 10px;
+    right: 15px;
+    font-size: 22px;
     cursor: pointer;
 }
 
 .hidden {
     display: none;
 }
+

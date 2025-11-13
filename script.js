@@ -1,154 +1,130 @@
-// Lista de obras con imagen + artista + descripción
+// Lista de obras
 const artworks = [
-    {
-        artist: "Claude Monet",
-        img: "mlaperla,jpg",
-        desc: "Impresionismo puro, lleno de luz y pinceladas sueltas."
-    },
-    {
-        artist: "Claude Monet",
-        img: "scream.jpg",
-        desc: "Una de las obras más representativas de la serie de estanques."
-    },
-    {
-        artist: "Van Gogh",
-        img: "lanochestrellada.jpg",
-        desc: "Colores vibrantes y movimiento intenso característicos del artista."
-    },
-    {
-        artist: "Van Gogh",
-        img: "monalisa.jpg",
-        desc: "Una obra que refleja el estilo postimpresionista y la emoción del autor."
-    }
+    { artist: "Monet", img: "images/monet1.jpg", desc: "Obra clásica del impresionismo." },
+    { artist: "Monet", img: "images/monet2.jpg", desc: "Paisaje lleno de luz y color." },
+    { artist: "Van Gogh", img: "images/vangogh1.jpg", desc: "Tonos vibrantes y expresivos." },
+    { artist: "Van Gogh", img: "images/vangogh2.jpg", desc: "Trazos intensos y emocionantes." }
 ];
 
-let timer = 60;
-let countdown;
-let firstCard = null;
-let lockBoard = false;
+let first = null;
+let lock = false;
 let matched = 0;
+let time = 60;
+let interval;
 
 // DOM
-const board = document.getElementById("board");
 const startBtn = document.getElementById("start-btn");
+const welcome = document.getElementById("welcome");
+const game = document.getElementById("game");
+const end = document.getElementById("end");
+const board = document.getElementById("board");
 const timerBox = document.getElementById("timer");
-const welcomeScreen = document.getElementById("welcome-screen");
-const gameScreen = document.getElementById("game-screen");
-const endScreen = document.getElementById("end-screen");
+const endTitle = document.getElementById("end-title");
 const gallery = document.getElementById("gallery");
-const endMessage = document.getElementById("end-message");
 
-const previewModal = document.getElementById("preview-modal");
-const previewImg = document.getElementById("preview-img");
-const previewDesc = document.getElementById("preview-desc");
-const closePreview = document.getElementById("close-preview");
+// Modal
+const modal = document.getElementById("modal");
+const modalImg = document.getElementById("modal-img");
+const modalDesc = document.getElementById("modal-desc");
+const closeModal = document.getElementById("close-modal");
 
-// --- INICIO DEL JUEGO ---
+/* ───────────────────────────── START ───────────────────────────── */
+
 startBtn.onclick = () => {
-    welcomeScreen.classList.add("hidden");
-    gameScreen.classList.remove("hidden");
+    welcome.classList.add("hidden");
+    game.classList.remove("hidden");
 
+    buildBoard();
     startTimer();
-    loadBoard();
 };
 
 function startTimer() {
-    countdown = setInterval(() => {
-        timer--;
-        timerBox.textContent = `Tiempo: ${timer}s`;
+    interval = setInterval(() => {
+        time--;
+        timerBox.textContent = `Tiempo: ${time}s`;
 
-        if (timer <= 0) {
-            clearInterval(countdown);
-            loseGame();
+        if (time <= 0) {
+            clearInterval(interval);
+            finish(false);
         }
     }, 1000);
 }
 
-// --- CARGA DE MEMOTEST ---
-function loadBoard() {
-    let cards = [...artworks, ...artworks]; // duplicar
-    cards = shuffle(cards);
+/* ───────────────────────────── BOARD ───────────────────────────── */
 
-    cards.forEach((item, index) => {
-        const div = document.createElement("div");
-        div.classList.add("card");
-        div.dataset.artist = item.artist;
+function buildBoard() {
+    let cards = [...artworks, ...artworks];
+    cards = cards.sort(() => Math.random() - 0.5);
+
+    cards.forEach((art) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.dataset.artist = art.artist;
 
         const img = document.createElement("img");
-        img.src = item.img;
+        img.src = art.img;
 
-        div.appendChild(img);
-        div.onclick = () => flipCard(div);
-        board.appendChild(div);
+        card.appendChild(img);
+
+        card.onclick = () => flip(card);
+        board.appendChild(card);
     });
 }
 
-// Mezclar cartas
-function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
-}
-
-// Voltear carta
-function flipCard(card) {
-    if (lockBoard || card.classList.contains("matched")) return;
+function flip(card) {
+    if (lock || card === first) return;
 
     card.querySelector("img").style.display = "block";
 
-    if (!firstCard) {
-        firstCard = card;
+    if (!first) {
+        first = card;
     } else {
         checkMatch(card);
     }
 }
 
-// Verificar match
 function checkMatch(card) {
-    lockBoard = true;
+    lock = true;
 
-    if (card.dataset.artist === firstCard.dataset.artist) {
-        card.classList.add("matched");
-        firstCard.classList.add("matched");
+    if (card.dataset.artist === first.dataset.artist) {
         matched++;
 
+        card.classList.add("matched");
+        first.classList.add("matched");
+
         if (matched === artworks.length) {
-            winGame();
+            clearInterval(interval);
+            finish(true);
         }
 
         reset();
     } else {
         setTimeout(() => {
             card.querySelector("img").style.display = "none";
-            firstCard.querySelector("img").style.display = "none";
+            first.querySelector("img").style.display = "none";
             reset();
         }, 900);
     }
 }
 
 function reset() {
-    firstCard = null;
-    lockBoard = false;
+    first = null;
+    lock = false;
 }
 
-// --- FIN DEL JUEGO ---
-function winGame() {
-    clearInterval(countdown);
-    gameScreen.classList.add("hidden");
-    endScreen.classList.remove("hidden");
+/* ───────────────────────────── END ───────────────────────────── */
 
-    endMessage.textContent = "🎉 ¡Completaste el recorrido del museo!";
+function finish(win) {
+    game.classList.add("hidden");
+    end.classList.remove("hidden");
+
+    endTitle.textContent = win
+        ? "🎉 ¡Completaste el recorrido del museo!"
+        : "⏳ Se acabó el tiempo, intentá otra vez";
 
     loadGallery();
 }
 
-function loseGame() {
-    gameScreen.classList.add("hidden");
-    endScreen.classList.remove("hidden");
-
-    endMessage.textContent = "⏳ Se acabó el tiempo. ¡Intentalo de nuevo!";
-    loadGallery();
-}
-
-// --- GALERÍA FINAL ---
 function loadGallery() {
     artworks.forEach((a) => {
         const item = document.createElement("div");
@@ -159,19 +135,18 @@ function loadGallery() {
 
         item.appendChild(img);
 
-        item.onclick = () => openPreview(a);
+        item.onclick = () => openModal(a);
 
         gallery.appendChild(item);
     });
 }
 
-// --- MODAL ---
-function openPreview(a) {
-    previewImg.src = a.img;
-    previewDesc.textContent = a.desc;
-    previewModal.classList.remove("hidden");
+/* ───────────────────────────── MODAL ───────────────────────────── */
+
+function openModal(a) {
+    modalImg.src = a.img;
+    modalDesc.textContent = a.desc;
+    modal.classList.remove("hidden");
 }
 
-closePreview.onclick = () => {
-    previewModal.classList.add("hidden");
-};
+closeModal.onclick = () => modal.classList.add("hidden");

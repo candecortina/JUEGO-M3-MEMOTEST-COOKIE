@@ -2,43 +2,47 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Memotest Museo</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Museo Memotest</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-<div id="welcome-screen">
-    <h1>🖼️ Museo Memotest</h1>
-    <p>
-        Bienvenido/a al Museo Interactivo.  
-        Encontrarás pares de obras del mismo artista.  
-        Cuando encuentres todos los pares, ingresarás a la Galería Final, donde podrás ver cada obra en detalle.  
-        <br><br>
-        Tenés <strong>60 segundos</strong> para completar el recorrido.
-    </p>
-    <button id="start-btn">Comenzar</button>
-</div>
+<!-- Bienvenida -->
+<section id="welcome">
+    <div class="welcome-box">
+        <h1>🖼️ Museo Memotest</h1>
+        <p>
+            Encontrá los pares de obras del mismo artista para completar el recorrido.  
+            Al final podrás acceder a la Galería del Museo con información de cada obra.  
+            <br><br>
+            Tenés <strong>60 segundos</strong> para completar el desafío.
+        </p>
+        <button id="start-btn">Comenzar</button>
+    </div>
+</section>
 
-<div id="game-screen" class="hidden">
+<!-- Juego -->
+<section id="game" class="hidden">
     <div id="timer">Tiempo: 60s</div>
     <div id="board"></div>
-</div>
+</section>
 
-<div id="end-screen" class="hidden">
-    <h2 id="end-message"></h2>
+<!-- Fin -->
+<section id="end" class="hidden">
+    <h2 id="end-title"></h2>
     <div id="gallery"></div>
-    <button onclick="location.reload()">Volver a comenzar</button>
-</div>
+    <button onclick="location.reload()">Reiniciar</button>
+</section>
 
-<!-- Modal para vista previa -->
-<div id="preview-modal" class="hidden">
-    <div class="modal-content">
-        <span id="close-preview">✖</span>
-        <img id="preview-img" src="" alt="">
-        <p id="preview-desc"></p>
+<!-- Modal -->
+<div id="modal" class="hidden">
+    <div class="modal-box">
+        <span id="close-modal">✖</span>
+        <img id="modal-img" src="">
+        <p id="modal-desc"></p>
     </div>
 </div>
 
-<script src="script.js"></script>
+<script src="js/script.js"></script>
 </body>
 </html>
