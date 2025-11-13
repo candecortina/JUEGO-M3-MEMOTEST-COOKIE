@@ -1,5 +1,6 @@
 const startBtn = document.getElementById('start-btn');
 const instructions = document.getElementById('instructions');
+const gameArea = document.getElementById('game-area');
 const gameBoard = document.getElementById('game-board');
 const message = document.getElementById('message');
 const restartBtn = document.getElementById('restart-btn');
@@ -15,13 +16,19 @@ let flippedCards = [];
 let matched = 0;
 
 startBtn.addEventListener('click', startGame);
-restartBtn.addEventListener('click', () => location.reload());
+restartBtn.addEventListener('click', restartGame);
 
 function startGame() {
   instructions.classList.add('hidden');
-  gameBoard.classList.remove('hidden');
+  gameArea.classList.remove('hidden');
+  createBoard();
+}
 
-  // Crear cartas
+function restartGame() {
+  location.reload();
+}
+
+function createBoard() {
   cards = [];
   pairs.forEach(pair => {
     pair.ingredients.forEach(ingredient => {
@@ -29,12 +36,10 @@ function startGame() {
     });
   });
 
-  // Mezclar cartas
   cards.sort(() => Math.random() - 0.5);
 
-  // Mostrar en tablero
   gameBoard.innerHTML = '';
-  cards.forEach((card, index) => {
+  cards.forEach(card => {
     const div = document.createElement('div');
     div.classList.add('card');
     div.dataset.pair = card.pairName;
@@ -51,11 +56,14 @@ function flipCard(card) {
   card.textContent = card.dataset.ingredient;
   flippedCards.push(card);
 
-  if (flippedCards.length === 2) checkMatch();
+  if (flippedCards.length === 2) {
+    setTimeout(checkMatch, 600);
+  }
 }
 
 function checkMatch() {
   const [card1, card2] = flippedCards;
+
   if (card1.dataset.pair === card2.dataset.pair && card1 !== card2) {
     showMessage(`🍪 ¡Combinación perfecta! Has creado la ${card1.dataset.pair}.`);
     matched += 2;
@@ -65,16 +73,14 @@ function checkMatch() {
       setTimeout(() => {
         showMessage('🎉 ¡Felicitaciones! Creaste todas las cookies 🍪');
         restartBtn.classList.remove('hidden');
-      }, 600);
+      }, 800);
     }
   } else {
-    setTimeout(() => {
-      card1.classList.remove('flipped');
-      card2.classList.remove('flipped');
-      card1.textContent = '';
-      card2.textContent = '';
-      flippedCards = [];
-    }, 1000);
+    flippedCards.forEach(c => {
+      c.classList.remove('flipped');
+      c.textContent = '';
+    });
+    flippedCards = [];
   }
 }
 

@@ -1,27 +1,33 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cookie Match 🍪</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="game-container">
+  <div class="container">
     <h1>🍪 Cookie Match</h1>
+
     <div id="instructions" class="instructions">
       <h2>¡Bienvenida/o al Cookie Match!</h2>
-      <p>Tu misión es descubrir qué ingredientes se combinan para crear deliciosas cookies.</p>
-      <p>🔹 Da vuelta dos fichas a la vez.<br>
-         🔹 Si los ingredientes combinan, formarás una cookie especial.<br>
-         🔹 Si no, ¡intentá otra vez!</p>
+      <p>
+        Tu misión es descubrir qué ingredientes se combinan para crear deliciosas cookies.
+      </p>
+      <ul>
+        <li>Da vuelta dos fichas a la vez.</li>
+        <li>Si los ingredientes combinan, formarás una cookie especial.</li>
+        <li>¡Completá todas para ganar!</li>
+      </ul>
       <button id="start-btn">Comenzar</button>
     </div>
 
-    <div id="game-board" class="game-board hidden"></div>
-    <div id="message" class="message hidden"></div>
-    <button id="restart-btn" class="hidden">🔄 Jugar de nuevo</button>
+    <div id="game-area" class="hidden">
+      <div id="game-board" class="game-board"></div>
+      <div id="message" class="message hidden"></div>
+      <button id="restart-btn" class="hidden">🔄 Jugar de nuevo</button>
+    </div>
   </div>
 
   <script src="script.js"></script>
