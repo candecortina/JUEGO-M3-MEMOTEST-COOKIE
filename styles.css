@@ -48,11 +48,13 @@ body {
   
   .game-board {
     display: grid;
-    grid-template-columns: repeat(4, 140px);
-    gap: 15px;
+    grid-template-columns: repeat(5, 140px);  /* 5 columnas */
+    grid-template-rows: repeat(2, 140px);     /* 2 filas */
+    gap: 20px;
     justify-content: center;
-    margin-top: 20px;
-  }
+    margin-top: 25px;
+}
+
   
   .card {
     width: 140px;
@@ -120,5 +122,11 @@ body {
   .gallery-item p {
     font-size: 0.9rem;
     color: #6b4e35;
+  }
+  @media (max-width: 600px) {
+    .game-board {
+      grid-template-columns: repeat(2, 140px);
+      grid-template-rows: auto;
+    }
   }
   
