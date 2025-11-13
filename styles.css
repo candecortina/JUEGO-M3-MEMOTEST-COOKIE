@@ -46,14 +46,16 @@ body {
     display: none;
   }
   
-  .game-board {
+  
+  #board {
     display: grid;
-    grid-template-columns: repeat(5, 140px);  /* 5 columnas */
-    grid-template-rows: repeat(2, 140px);     /* 2 filas */
+    grid-template-columns: repeat(5, 140px);
+    grid-template-rows: repeat(2, 140px);
     gap: 20px;
     justify-content: center;
     margin-top: 25px;
 }
+
 
   
   .card {
