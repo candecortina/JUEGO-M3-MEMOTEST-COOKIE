@@ -1,474 +1,292 @@
+<!-- Código del juego ArtMatch estilo museo (versión inicial para editar) -->
+<!-- Voy a poner toda la estructura HTML aquí. Luego podemos editar CSS y JS dentro del mismo archivo o separarlo -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>ArtMatch — Descubrí la Obra 🎨</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ArtMatch Museo</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+            background: #f4efe6 url('https://i.imgur.com/mYbS2R3.jpeg'); /* textura museo suave */
+            background-size: cover;
+            background-attachment: fixed;
+            color: #3a2f1b;
+        }
 
-<!-- Tipografía elegante -->
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+        .pantalla {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
 
-<style>
-  :root{
-    --bg:#fbf7f4;
-    --panel:#fff7ee;
-    --accent:#5a3e2b;
-    --gold:#b88a50;
-    --card-size:150px; /* fichas grandes */
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family:"Playfair Display", serif;
-    background: linear-gradient(180deg, #faf6f2, var(--bg));
-    color:var(--accent);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height:100vh;
-    padding:20px;
-  }
+        .visible { display: block; }
 
-  /* Contenedor principal */
-  .app {
-    width:100%;
-    max-width:980px;
-    background:var(--panel);
-    border-radius:14px;
-    box-shadow:0 12px 30px rgba(0,0,0,0.12);
-    padding:26px;
-    text-align:center;
-    position:relative;
-    overflow:hidden;
-  }
+        #inicio h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
 
-  h1{ margin:0 0 6px; font-size:1.9rem; color:var(--accent) }
-  p.lead{ margin:0 0 18px; color:#6b5045 }
+        #inicio .instrucciones {
+            max-width: 550px;
+            margin: auto;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            background: rgba(255,255,255,0.8);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #d4c5aa;
+        }
 
-  /* Screens */
-  .screen{ transition: opacity .35s ease, transform .35s ease; }
-  .hidden{ display:none; opacity:0; transform: translateY(6px); }
+        button {
+            margin-top: 25px;
+            font-size: 1.3rem;
+            padding: 12px 28px;
+            border-radius: 10px;
+            border: none;
+            background: #c7a671;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
 
-  /* controles superiores */
-  .controls{ display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap; margin-bottom:16px }
-  .btn{
-    background:var(--gold);
-    color:#fff;
-    border:none;
-    padding:10px 16px;
-    border-radius:10px;
-    cursor:pointer;
-    font-family:inherit;
-    font-size:0.95rem;
-    box-shadow:0 6px 12px rgba(184,138,80,0.18);
-  }
-  .btn.secondary{
-    background:transparent;
-    color:var(--accent);
-    border:1px solid rgba(45,31,24,0.06);
-    box-shadow:none;
-  }
+        button:hover { background: #b08a55; }
 
-  /* Tablero */
-  .board {
-    display:grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap:14px;
-    justify-items:center;
-    align-items:center;
-    padding:12px;
-  }
-  @media (max-width:920px){
-    .board{ grid-template-columns: repeat(4, 1fr); }
-  }
-  @media (max-width:600px){
-    .board{ grid-template-columns: repeat(3, 1fr); }
-  }
+        /* TABLERO */
+        #tablero {
+            display: grid;
+            grid-template-columns: repeat(4, 180px);
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
 
-  /* Card como cuadro */
-  .card {
-    width:var(--card-size);
-    height:var(--card-size);
-    perspective:900px;
-    cursor:pointer;
-    border-radius:10px;
-    transition: transform .25s ease;
-    position:relative;
-  }
-  .card:focus { outline: 3px solid rgba(88,62,44,0.12); }
+        .carta {
+            width: 180px;
+            height: 180px;
+            background: #fff;
+            border-radius: 10px;
+            border: 6px solid #bfa87a; /* marco tipo cuadro */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform .2s;
+        }
 
-  .inner {
-    width:100%;
-    height:100%;
-    position:relative;
-    transform-style:preserve-3d;
-    transition: transform .6s cubic-bezier(.2,.9,.3,1);
-    border-radius:10px;
-  }
-  .card.flipped .inner { transform: rotateY(180deg); }
+        .carta:hover { transform: scale(1.05); }
 
-  .face{
-    position:absolute;
-    inset:0;
-    backface-visibility:hidden;
-    border-radius:8px;
-    overflow:hidden;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.08);
-    border:6px solid var(--gold); /* marco dorado */
-    background: #f8f4ec; /* lienzo */
-  }
+        .carta img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-  .back{
-    transform: rotateY(0deg);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .back .label{
-    text-align:center;
-    color:#8b5a3d;
-    font-weight:700;
-    font-size:0.78rem;
-    line-height:1;
-  }
+        /* GALERÍA FINAL */
+        #galeriaFinal {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            padding: 40px;
+        }
 
-  .front{
-    transform: rotateY(180deg);
-    background:#fff;
-  }
+        .obra {
+            background: #ffffffdd;
+            padding: 15px;
+            border-radius: 14px;
+            border: 4px solid #bfa87a;
+            cursor: pointer;
+            transition: 0.3s;
+        }
 
-  .thumb{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-  }
+        .obra:hover { transform: scale(1.04); }
 
-  .card.matched .inner { box-shadow: 0 10px 22px rgba(184,138,80,0.14); outline:4px solid rgba(184,138,80,0.08); }
+        .obra img {
+            width: 100%;
+            border-radius: 8px;
+        }
 
-  .status{
-    margin-top:14px;
-    font-size:0.98rem;
-    color:#4b352d;
-  }
+        /* MODAL GRANDE */
+        #modalFondo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
 
-  /* Overlay galería */
-  .overlay{
-    position:fixed;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:rgba(18,12,8,0.45);
-    z-index:60;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .25s ease;
-  }
-  .overlay.show{ opacity:1; pointer-events:auto; }
+        #modalObra {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 70%;
+        }
 
-  .gallery {
-    width:92%;
-    max-width:980px;
-    max-height:92vh;
-    overflow:auto;
-    background:linear-gradient(180deg,#fffaf6,#fff6ee);
-    padding:22px;
-    border-radius:12px;
-    box-shadow:0 22px 50px rgba(0,0,0,0.28);
-    text-align:left;
-  }
-  .gallery h2{ margin:4px 0 12px; color:var(--accent) }
-
-  .grid-gallery{
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap:14px;
-  }
-  @media (max-width:900px){ .grid-gallery{ grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width:520px){ .grid-gallery{ grid-template-columns: 1fr; } }
-
-  .art-card{
-    background:#fff;
-    border-radius:10px;
-    overflow:hidden;
-    box-shadow:0 8px 18px rgba(0,0,0,0.08);
-    display:flex;
-    flex-direction:column;
-  }
-  .art-card img{ width:100%; height:180px; object-fit:cover; display:block; }
-  .art-meta{ padding:12px; }
-  .art-meta h3{ margin:0 0 6px; font-size:1rem; color:#3b2a22 }
-  .art-meta p.small{ margin:0 0 8px; font-size:0.88rem; color:#6b5650 }
-
-  .close-x{
-    background:transparent;
-    border:1px solid rgba(0,0,0,0.06);
-    color:var(--accent);
-    padding:8px 12px;
-    border-radius:8px;
-    cursor:pointer;
-    float:right;
-    margin-top:-8px;
-  }
-
-  /* small helpers */
-  .muted{ color:#7a6157; font-size:0.9rem }
-  code{ background:#fff3e6; padding:2px 6px; border-radius:6px; font-size:0.9rem }
-</style>
+        #modalObra img {
+            width: 100%;
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="ArtMatch">
-    <h1>ArtMatch: Descubrí la Obra</h1>
-    <p class="lead">Encontrá las parejas de cuadros iguales y desbloqueá la galería final con información.</p>
 
-    <!-- Pantalla inicio -->
-    <div id="startScreen" class="screen">
-      <div class="controls">
-        <button id="startBtn" class="btn">Comenzar</button>
-        <button id="shuffleBtn" class="btn secondary">Mezclar</button>
-        <div style="min-width:220px; text-align:left">
-          <strong>Instrucciones:</strong>
-          <div class="muted">Volteá dos cartas. Si son el mismo cuadro, quedan descubiertas. Completá todas las parejas.</div>
-        </div>
-      </div>
+    <!-- PANTALLA DE INICIO -->
+    <section id="inicio" class="pantalla visible">
+        <h1>🎨 ArtMatch: Museo Interactivo</h1>
+        <p class="instrucciones">
+            Bienvenido al ArtMatch, un recorrido interactivo por un museo digital. <br><br>
+            Tu objetivo es encontrar las parejas de cuadros idénticos antes de que el tiempo se agote. Cada obra pertenece a un artista reconocido, y al completar el desafío, accederás a una galería exclusiva donde podrás verlas en grande y conocer más sobre ellas.
+        </p>
+        <button onclick="iniciarJuego()">Comenzar</button>
+    </section>
+
+    <!-- PANTALLA DE JUEGO -->
+    <section id="juego" class="pantalla">
+        <h2>Buscá las obras • Tiempo: <span id="tiempo">60</span>s</h2>
+        <div id="tablero"></div>
+    </section>
+
+    <!-- PANTALLA FINAL -->
+    <section id="final" class="pantalla">
+        <h2>🖼️ Galería de Arte</h2>
+        <p id="mensajeFinal"></p>
+        <div id="galeriaFinal"></div>
+        <button onclick="reiniciar()">Jugar de nuevo</button>
+    </section>
+
+    <!-- MODAL PREVIEW -->
+    <div id="modalFondo" onclick="cerrarModal()">
+        <div id="modalObra"></div>
     </div>
-
-    <!-- Tablero -->
-    <div id="gameScreen" class="screen hidden" aria-live="polite">
-      <div id="board" class="board" role="grid"></div>
-      <div class="status" id="status">Pares encontrados: <strong id="found">0</strong> / 6</div>
-    </div>
-
-    <div style="margin-top:12px; text-align:center" class="muted">Colocá las imágenes en <code>img/</code> con los nombres: monalisa.jpg, noche_estrellada.jpg, el_grito.jpg, la_joven_perla.jpg, persistencia_memoria.jpg, los_girasoles.jpg</div>
-  </div>
-
-  <!-- Galería final -->
-  <div id="overlay" class="overlay" aria-hidden="true">
-    <div class="gallery" role="dialog" aria-modal="true">
-      <button id="closeGallery" class="close-x">Cerrar</button>
-      <h2>🖼️ Tu galería de arte</h2>
-      <div id="galleryGrid" class="grid-gallery"></div>
-      <div style="text-align:right; margin-top:12px;">
-        <button id="replayBtn" class="btn">Jugar de nuevo</button>
-      </div>
-    </div>
-  </div>
 
 <script>
-/* ---------- CONFIG: obras (rutas .jpg) ---------- */
-const ARTS = [
-  { id:'monalisa', title:'Mona Lisa', artist:'Leonardo da Vinci', desc:'Retrato del Renacimiento, célebre por la enigmática sonrisa y la técnica sfumato.', img:'img/monalisa.jpg' },
-  { id:'starry', title:'La noche estrellada', artist:'Vincent van Gogh', desc:'Cielo dinámico y remarcado expresionismo cromático; obra postimpresionista icónica.', img:'img/lanocheestrellada.jpg' },
-  { id:'persistence', title:'La persistencia de la memoria', artist:'Salvador Dalí', desc:'Surrealismo: relojes derretidos que desafían la percepción del tiempo.', img:'img/cuadro2.jpg' },
-  { id:'scream', title:'El grito', artist:'Edvard Munch', desc:'Expresión intensa de angustia existencial mediante color y forma.', img:'img/scream.jpg' },
-  { id:'girl_pearl', title:'La joven de la perla', artist:'Johannes Vermeer', desc:'Retrato íntimo resaltando luz y mirada cautivadora.', img:'img/laperla.jpg' },
-  { id:'venus', title:'Los girasoles', artist:'Vincent van Gogh', desc:'Naturalezas muertas vibrantes; simbolismo de amistad y gratitud.', img:'img/cuadro1.jpg' }
+let obras = [
+    {nombre: "Mona Lisa", artista: "Leonardo da Vinci", desc: "Retrato icónico del Renacimiento.", img:"img/monalisa.jpg"},
+    {nombre: "Noche estrellada", artista: "Van Gogh", desc: "Cielo turbulento lleno de movimiento.", img:"img/noche.jpg"},
+    {nombre: "La joven de la perla", artista: "Vermeer", desc: "Retrato íntimo y misterioso.", img:"img/perla.jpg"},
+    {nombre: "El grito", artista: "Munch", desc: "Expresión del terror existencial.", img:"img/grito.jpg"}
 ];
-/* ------------------------------------------------- */
 
-const startBtn = document.getElementById('startBtn');
-const shuffleBtn = document.getElementById('shuffleBtn');
-const startScreen = document.getElementById('startScreen');
-const gameScreen = document.getElementById('gameScreen');
-const board = document.getElementById('board');
-const foundEl = document.getElementById('found');
-const statusEl = document.getElementById('status');
-const overlay = document.getElementById('overlay');
-const galleryGrid = document.getElementById('galleryGrid');
-const closeGallery = document.getElementById('closeGallery');
-const replayBtn = document.getElementById('replayBtn');
+let cartas = [];
+let seleccionadas = [];
+let tiempo = 60;
+let cuentaRegresiva;
+let encontradas = 0;
 
-let deck = [];         // cartas
-let flipped = [];      // cartas volteadas (obj: {el, idx})
-let matchedCount = 0;  // cantidad de pares encontrados
-let discovered = [];   // ids descubiertas
-
-// Construye deck duplicando cada obra y mezclando
-function buildDeck(){
-  deck = [];
-  ARTS.forEach(a => {
-    deck.push({ artId:a.id, meta:a });
-    deck.push({ artId:a.id, meta:a });
-  });
-  shuffle(deck);
+function mostrarPantalla(id) {
+    document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('visible'));
+    document.getElementById(id).classList.add('visible');
 }
 
-// Fisher-Yates shuffle
-function shuffle(arr){
-  for(let i=arr.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
+function iniciarJuego() {
+    mostrarPantalla('juego');
+    cargarCartas();
+    iniciarTiempo();
 }
 
-// Renderiza tablero
-function renderBoard(){
-  board.innerHTML = '';
-  deck.forEach((cardData, idx) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.setAttribute('data-index', idx);
-    card.tabIndex = 0;
+function cargarCartas() {
+    cartas = [...obras, ...obras].sort(() => Math.random()-0.5);
+    let tablero = document.getElementById("tablero");
+    tablero.innerHTML = "";
 
-    const inner = document.createElement('div');
-    inner.className = 'inner';
-
-    // back face (dorso-estético)
-    const back = document.createElement('div');
-    back.className = 'face back';
-    back.innerHTML = `<div class="label">MUSEO<br><small style="font-weight:400;font-size:0.8rem;margin-top:6px;display:block">ArtMatch</small></div>`;
-
-    // front face (imagen)
-    const front = document.createElement('div');
-    front.className = 'face front';
-    const img = document.createElement('img');
-    img.className = 'thumb';
-    img.alt = cardData.meta.title + ' — ' + cardData.meta.artist;
-    img.src = cardData.meta.img;
-    img.onerror = function(){
-      this.style.display='none';
-      // fallback textual
-      const fallback = document.createElement('div');
-      fallback.style.display='flex';
-      fallback.style.alignItems='center';
-      fallback.style.justifyContent='center';
-      fallback.style.padding='8px';
-      fallback.innerHTML = `<div style="text-align:center;color:#4b392f"><strong>${cardData.meta.title}</strong><div style="font-size:0.85rem">${cardData.meta.artist}</div></div>`;
-      front.appendChild(fallback);
-    };
-    front.appendChild(img);
-
-    inner.appendChild(back);
-    inner.appendChild(front);
-    card.appendChild(inner);
-
-    // eventos
-    card.addEventListener('click', () => handleFlip(card));
-    card.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') handleFlip(card); });
-
-    board.appendChild(card);
-  });
-
-  // reset estado
-  flipped = [];
-  matchedCount = 0;
-  discovered = [];
-  updateStatus();
+    cartas.forEach((obra,i)=>{
+        let c = document.createElement("div");
+        c.className = "carta";
+        c.dataset.indice = i;
+        c.onclick = () => voltear(c);
+        tablero.appendChild(c);
+    });
 }
 
-// Gestión de flip
-function handleFlip(cardEl){
-  const idx = Number(cardEl.dataset.index);
-  if (cardEl.classList.contains('matched') || cardEl.classList.contains('flipped')) return;
-  if (flipped.length === 2) return;
+function voltear(carta) {
+    if (seleccionadas.length === 2) return;
+    let index = carta.dataset.indice;
 
-  // flip visual
-  cardEl.classList.add('flipped');
-  // add to flipped stack
-  flipped.push({ el:cardEl, idx });
+    carta.innerHTML = `<img src="${cartas[index].img}">`;
+    seleccionadas.push(carta);
 
-  if (flipped.length === 2){
-    // revisar coincidencia
-    const [a, b] = flipped;
-    const idA = deck[a.idx].artId;
-    const idB = deck[b.idx].artId;
+    if (seleccionadas.length === 2) {
+        setTimeout(()=>{
+            let [c1,c2] = seleccionadas;
+            let i1 = c1.dataset.indice;
+            let i2 = c2.dataset.indice;
 
-    if (idA === idB){
-      // es par
-      setTimeout(() => {
-        a.el.classList.add('matched');
-        b.el.classList.add('matched');
-        // marcar descubierto si no estaba
-        if (!discovered.includes(idA)) discovered.push(idA);
-        matchedCount += 1;
-        flipped = [];
-        updateStatus();
-        if (matchedCount === ARTS.length) {
-          setTimeout(showGallery, 700);
-        }
-      }, 420);
-    } else {
-      // no coincide -> desflip
-      setTimeout(() => {
-        a.el.classList.remove('flipped');
-        b.el.classList.remove('flipped');
-        flipped = [];
-      }, 900);
+            if (cartas[i1].img === cartas[i2].img) {
+                encontradas++;
+                c1.style.pointerEvents = 'none';
+                c2.style.pointerEvents = 'none';
+
+                if (encontradas === obras.length) finJuego(true);
+            } else {
+                c1.innerHTML = "";
+                c2.innerHTML = "";
+            }
+            seleccionadas = [];
+        }, 800);
     }
-  }
 }
 
-function updateStatus(){
-  foundEl.textContent = discovered.length;
-  statusEl.innerHTML = `Pares encontrados: <strong>${discovered.length}</strong> / ${ARTS.length}`;
+function iniciarTiempo() {
+    tiempo = 60;
+    document.getElementById('tiempo').textContent = tiempo;
+
+    cuentaRegresiva = setInterval(()=>{
+        tiempo--;
+        document.getElementById('tiempo').textContent = tiempo;
+        if (tiempo === 0) finJuego(false);
+    },1000);
 }
 
-// Muestra galería final
-function showGallery(){
-  galleryGrid.innerHTML = '';
-  // ordenar por ARTS para consistencia
-  const toShow = ARTS.filter(a => discovered.includes(a.id));
-  // si por algún motivo está vacío, mostrar todas
-  const finalList = toShow.length ? toShow : ARTS;
-  finalList.forEach(art => {
-    const c = document.createElement('div');
-    c.className = 'art-card';
-    const im = document.createElement('img');
-    im.src = art.img;
-    im.alt = art.title + ' — ' + art.artist;
-    im.onerror = function(){ this.style.display='none'; };
-    const meta = document.createElement('div');
-    meta.className = 'art-meta';
-    meta.innerHTML = `<h3>${art.title}</h3><p class="small"><em>${art.artist}</em></p><p>${art.desc}</p>`;
-    c.appendChild(im);
-    c.appendChild(meta);
-    galleryGrid.appendChild(c);
-  });
+function finJuego(ganaste) {
+    clearInterval(cuentaRegresiva);
+    mostrarPantalla('final');
 
-  overlay.classList.add('show');
-  overlay.setAttribute('aria-hidden','false');
+    document.getElementById('mensajeFinal').textContent = ganaste 
+        ? "¡Felicitaciones! Completaste el recorrido del museo."
+        : "Tiempo agotado… Volvé a intentarlo y completá la colección.";
+
+    cargarGaleria();
 }
 
-// Cerrar galería
-function closeGalleryFn(){
-  overlay.classList.remove('show');
-  overlay.setAttribute('aria-hidden','true');
+function cargarGaleria() {
+    let cont = document.getElementById('galeriaFinal');
+    cont.innerHTML = "";
+
+    obras.forEach(o =>{
+        let div = document.createElement("div");
+        div.className = "obra";
+        div.innerHTML = `<img src="${o.img}"><h3>${o.nombre}</h3><p>${o.artista}</p>`;
+        div.onclick = ()=> abrirModal(o);
+        cont.appendChild(div);
+    });
 }
 
-// Eventos UI
-startBtn.addEventListener('click', () => {
-  buildDeck();
-  renderBoard();
-  // mostrar pantalla juego
-  startScreen.classList.add('hidden');
-  gameScreen.classList.remove('hidden');
-  // small focus
-  setTimeout(() => board.querySelector('.card')?.focus(), 350);
-});
+function abrirModal(obra) {
+    document.getElementById('modalFondo').style.display = 'flex';
+    document.getElementById('modalObra').innerHTML = `
+        <img src="${obra.img}">
+        <h2>${obra.nombre}</h2>
+        <h4>${obra.artista}</h4>
+        <p>${obra.desc}</p>
+    `;
+}
 
-shuffleBtn.addEventListener('click', () => {
-  buildDeck();
-  renderBoard();
-});
+function cerrarModal() {
+    document.getElementById('modalFondo').style.display = 'none';
+}
 
-closeGallery.addEventListener('click', closeGalleryFn);
-overlay.addEventListener('click', (e) => { if (e.target === overlay) closeGalleryFn(); });
-replayBtn.addEventListener('click', () => {
-  closeGalleryFn();
-  buildDeck();
-  renderBoard();
-  // volver a pantalla juego
-  startScreen.classList.add('hidden');
-  gameScreen.classList.remove('hidden');
-});
-
-// Optional: auto-build on load so preview shows something (comment if undesired)
-// buildDeck(); renderBoard();
+function reiniciar() {
+    encontradas = 0;
+    seleccionadas = [];
+    iniciarJuego();
+}
 </script>
+
 </body>
 </html>
