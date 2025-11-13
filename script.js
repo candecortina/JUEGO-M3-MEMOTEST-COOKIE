@@ -28,12 +28,6 @@ const obras = [
       artista: "Salvador Dalí",
       descripcion: "Obra surrealista que representa el paso del tiempo con relojes derretidos.",
       imagen: "img/cuadro1.jpg"
-    },
-    {
-      nombre: "Los girasoles",
-      artista: "Vincent van Gogh",
-      descripcion: "Serie de naturalezas muertas vibrantes que simbolizan la amistad y la gratitud.",
-      imagen: "img/cuadro2.jpg"
     }
   ];
   
