@@ -1,149 +1,176 @@
-body {
-    margin: 0;
-    font-family: "Playfair Display", serif;
-    background-color: #fdf8f2;
-    background-image: radial-gradient(#e9dcc6 1px, transparent 1px);
-    background-size: 25px 25px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
-
-.container {
-    text-align: center;
-    background-color: #fff7ee;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 700px;
-}
-
-h1 {
-    color: #5a3e2b;
-    margin-bottom: 10px;
-}
-
-.start-btn {
-    margin-top: 20px;
-}
-
-button {
-    background-color: #b88a50;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 12px 25px;
-    cursor: pointer;
-    font-size: 1.1rem;
-    transition: transform 0.2s ease, background-color 0.3s ease;
-    font-family: "Playfair Display", serif;
-}
-
-button:hover {
-    background-color: #d9aa66;
-    transform: scale(1.05);
-}
-
-.hidden {
-    display: none;
-}
-
-.game-board {
-    display: grid;
-    grid-template-columns: repeat(4, 150px);
-    gap: 20px;
-    justify-content: center;
-    margin-top: 25px;
-}
-
-.card {
-    width: 150px;
-    height: 150px;
-    background-color: #f8f4ec;
-    border: 6px solid #b88a50;
-    border-radius: 10px;
-    box-shadow:
-      0 4px 10px rgba(0, 0, 0, 0.2),
-      inset 0 0 10px rgba(255, 255, 255, 0.3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-    overflow: hidden;
-}
-
-.card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-}
-
-.card.flipped img,
-.card.matched img {
-    display: block;
-}
-
-.card:hover {
-    transform: scale(1.05);
-}
-
-/* GALERÍA */
-#gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 20px;
-}
-
-.gallery-item {
-    background-color: #fff;
-    border: 4px solid #b88a50;
-    border-radius: 10px;
-    padding: 10px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    cursor: pointer;
-}
-
-.gallery-item img {
-    width: 100%;
-    border-radius: 6px;
-    object-fit: cover;
-}
-
-/* MODAL PREVIEW */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.65);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background: white;
-    padding: 20px;
-    width: 90%;
-    max-width: 500px;
-    border-radius: 12px;
-    text-align: center;
-}
-
-#close-modal {
-    float: right;
-    cursor: pointer;
-    font-size: 1.5rem;
-}
-
-/* RESPONSIVE */
-@media (max-width: 600px) {
-    .game-board {
-        grid-template-columns: repeat(2, 150px);
-    }
-}
+/* styles.css - ArtMatch museo, responsive, modales correctos */
+:root{
+    --bg: #fbf7f4;
+    --panel: #fff7ee;
+    --accent: #5a3e2b;
+    --gold: #b88a50;
+    --card-size: 150px;
+    --max-width: 1100px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:"Playfair Display", serif;
+    background: linear-gradient(180deg,#faf6f2,var(--bg));
+    color:var(--accent);
+    display:flex;
+    justify-content:center;
+    padding:24px;
+    min-height:100vh;
+  }
+  
+  /* App container */
+  .app{ width:100%; max-width:var(--max-width); }
+  
+  /* Panel */
+  .panel{
+    background:var(--panel);
+    border-radius:14px;
+    padding:28px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.08);
+    text-align:center;
+    margin: 0 auto 12px;
+  }
+  
+  /* Header / intro */
+  h1{ margin:0 0 10px; font-size:2rem; }
+  .intro{ color:#5b4536; margin-bottom:12px; }
+  .instructions{ background:rgba(255,255,255,0.6); padding:10px 14px; border-radius:10px; margin-bottom:16px; color:#4c382f; }
+  
+  /* Start button bottom */
+  .start-wrap{ margin-top:18px; }
+  .btn{
+    background:var(--gold);
+    color:white;
+    border:none;
+    padding:10px 18px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:1rem;
+  }
+  .btn.secondary{
+    background:transparent;
+    border:1px solid rgba(75,58,43,0.12);
+    color:var(--accent);
+  }
+  
+  /* GAME HEADER */
+  .game-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:14px;
+  }
+  .timer{ font-weight:700; background:#fff3dd; padding:8px 12px; border-radius:8px; border:1px solid rgba(0,0,0,0.03); }
+  
+  /* GRID 5x2 style for desktop; since we have 10 cards, use 5 columns */
+  .board{
+    display:grid;
+    grid-template-columns: repeat(5, var(--card-size));
+    gap:18px;
+    justify-content:center;
+    margin:0 auto;
+  }
+  
+  /* cards */
+  .card{
+    width:var(--card-size);
+    height:var(--card-size);
+    border-radius:12px;
+    border:6px solid var(--gold);
+    background:#f8f4ec;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+    cursor:pointer;
+    transition: transform .18s ease;
+  }
+  .card:hover{ transform: translateY(-6px); }
+  
+  .card img{
+    width:100%;
+    height:100%;
+    object-fit:cover; /* cards crop to fill */
+    display:none;
+  }
+  .card.flipped img,
+  .card.matched img{ display:block; }
+  
+  /* status */
+  .status{ margin-top:12px; color:#4b352d; }
+  
+  /* gallery result */
+  .gallery{
+    display:grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap:18px;
+    margin-top:18px;
+  }
+  .gallery-item{
+    background:white;
+    border-radius:10px;
+    padding:8px;
+    border:4px solid #e7d6b5;
+    box-shadow:0 8px 18px rgba(0,0,0,0.06);
+    text-align:left;
+  }
+  .gallery-item img{
+    width:100%;
+    height:200px;
+    object-fit:contain; /* gallery not cropped */
+    background:#f8f4ec;
+    border-radius:6px;
+  }
+  .gallery-item h3{ margin:8px 0 6px; font-size:1rem; color:#4b352d; }
+  .gallery-item p{ margin:0; color:#6b4e35; font-size:0.92rem; }
+  
+  /* MODAL base */
+  .modal{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,0.55);
+    z-index:1200;
+  }
+  .modal.hidden{ display:none; }
+  
+  .modal-inner{
+    background:var(--panel);
+    padding:18px;
+    border-radius:12px;
+    max-width:720px;
+    width:90%;
+    box-shadow:0 20px 40px rgba(0,0,0,0.25);
+    position:relative;
+    text-align:center;
+  }
+  .modal-inner.small{ max-width:520px; }
+  
+  /* preview modal specifics */
+  .modal-inner img{ width:100%; max-height:60vh; object-fit:contain; border-radius:8px; margin-bottom:12px; }
+  
+  .modal-close{
+    position:absolute;
+    top:10px;
+    right:12px;
+    background:transparent;
+    border:none;
+    font-size:20px;
+    cursor:pointer;
+    color:var(--accent);
+  }
+  .modal-actions{ display:flex; gap:10px; justify-content:center; margin-top:10px; }
+  
+  /* responsive: mobile 2 columns */
+  @media (max-width:760px){
+    :root{ --card-size: 140px; }
+    .board{ grid-template-columns: repeat(2, var(--card-size)); gap:14px; }
+    .panel{ padding:18px; }
+    h1{ font-size:1.4rem; }
+  }
+  

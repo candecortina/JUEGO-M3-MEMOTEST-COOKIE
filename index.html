@@ -1,52 +1,97 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memotest del Museo</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ArtMatch — Memotest del Museo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <main class="app">
 
-    <!-- PANTALLA DE INICIO -->
-    <div class="container" id="start-screen">
-        <h1>🖼️ Memotest del Museo</h1>
+    <!-- START SCREEN -->
+    <section id="start-screen" class="panel">
+      <h1>🖼️ Memotest del Museo</h1>
+      <p class="intro">
+        Bienvenido/a. Observá, memorizá y encontrá las parejas de obras. Al completar el tablero accederás a la galería con información de cada pintura.
+      </p>
 
-        <p class="intro">
-            Bienvenido al Museo interactivo.<br>
-            Observá, memorizá y encontrá las parejas de las obras más icónicas de la historia del arte.<br><br>
-            Cuando completes el tablero podrás acceder a la galería final donde verás información detallada
-            de cada obra y su historia.
-        </p>
+      <!-- instrucciones resumidas -->
+      <div class="instructions">
+        <strong>Instrucciones:</strong>
+        <p>Volteá dos fichas por turno. Si coinciden, quedan descubiertas. Tenés 45 minutos. ¡Suerte!</p>
+      </div>
 
-        <button id="start-btn" class="start-btn">Comenzar</button>
-    </div>
+      <!-- start button abajo -->
+      <div class="start-wrap">
+        <button id="startBtn" class="btn">Comenzar</button>
+      </div>
+    </section>
 
-    <!-- PANTALLA DE JUEGO -->
-    <div class="container hidden" id="game-screen">
-        <h1>Memotest</h1>
-        <p id="timer">Tiempo: 45s</p>
-        <div id="game-board" class="game-board"></div>
-    </div>
-
-    <!-- RESULTADO -->
-    <div class="container hidden" id="result-screen">
-        <h1 id="result-title"></h1>
-        <p id="result-text"></p>
-        <div id="gallery"></div>
-        <button onclick="location.reload()">Jugar de nuevo</button>
-    </div>
-
-    <!-- MODAL PREVIEW -->
-    <div id="preview-modal" class="modal hidden">
-        <div class="modal-content">
-            <span id="close-modal">&times;</span>
-            <img id="modal-img">
-            <h2 id="modal-title"></h2>
-            <p id="modal-desc"></p>
+    <!-- GAME SCREEN -->
+    <section id="game-screen" class="panel hidden" aria-live="polite">
+      <header class="game-header">
+        <div class="left">
+          <h2>Memotest</h2>
         </div>
-    </div>
+        <div class="right">
+          <div id="timer" class="timer">45:00</div>
+        </div>
+      </header>
 
-    <script src="script.js"></script>
+      <div id="board" class="board" role="grid" aria-label="Tablero de ArtMatch"></div>
+      <div class="status" id="status">Pares encontrados: <strong id="found">0</strong> / 5</div>
+    </section>
+
+    <!-- RESULT / GALLERY SCREEN (se muestra la galería tras terminar) -->
+    <section id="result-screen" class="panel hidden">
+      <h2 id="result-title"></h2>
+      <p id="result-text"></p>
+
+      <h3>Galería final</h3>
+      <div id="gallery" class="gallery" aria-label="Galería de obras"></div>
+
+      <div class="result-actions">
+        <button id="replayBtn" class="btn">Jugar de nuevo</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- PREVIEW MODAL -->
+  <div id="previewModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-inner">
+      <button class="modal-close" id="previewClose" aria-label="Cerrar vista previa">✖</button>
+      <img id="previewImg" src="" alt="">
+      <h3 id="previewTitle"></h3>
+      <p id="previewDesc"></p>
+    </div>
+  </div>
+
+  <!-- WIN MODAL -->
+  <div id="winModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-inner small">
+      <h2>🎉 ¡Felicidades!</h2>
+      <p>Completaste todas las parejas. ¡Excelente trabajo!</p>
+      <div class="modal-actions">
+        <button id="winGalleryBtn" class="btn">Ver galería</button>
+        <button id="winCloseBtn" class="btn secondary">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOSE MODAL -->
+  <div id="loseModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-inner small">
+      <h2>⏳ Tiempo agotado</h2>
+      <p>No lograste completar el tablero a tiempo. ¡Probá otra vez!</p>
+      <div class="modal-actions">
+        <button id="loseRetryBtn" class="btn">Reintentar</button>
+        <button id="loseCloseBtn" class="btn secondary">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+<script src="script.js"></script>
 </body>
 </html>
